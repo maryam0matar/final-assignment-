@@ -1,0 +1,137 @@
+import networkx as nx
+import matplotlib.pyplot as plt
+import random
+
+class Intersection:
+    def __init__(self, intersection_id):
+        self._intersection_id = intersection_id
+        self._houses = []
+
+    @property
+    def intersection_id(self):
+        return self._intersection_id
+
+    @property
+    def houses(self):
+        return self._houses
+
+    def add_house(self, house):
+        self._houses.append(house)
+
+class Road:
+    def __init__(self, road_id, road_name, start_intersection, end_intersection, length):
+        self._road_id = road_id
+        self._road_name = road_name
+        self._start_intersection = start_intersection
+        self._end_intersection = end_intersection
+        self._length = length
+
+    @property
+    def road_id(self):
+        return self._road_id
+
+    @property
+    def road_name(self):
+        return self._road_name
+
+    @property
+    def start_intersection(self):
+        return self._start_intersection
+
+    @property
+    def end_intersection(self):
+        return self._end_intersection
+
+    @property
+    def length(self):
+        return self._length
+
+class TrafficNetworkManager:
+    def __init__(self):
+        self._intersections = {}
+        self._roads = []
+        self._graph = nx.Graph()
+
+    def add_intersection(self, intersection):
+        self._intersections[intersection.intersection_id] = intersection
+        self._graph.add_node(intersection.intersection_id)
+
+    def add_road(self, road):
+        self._roads.append(road)
+        self._graph.add_edge(road.start_intersection, road.end_intersection,
+                             road_id=road.road_id, road_name=road.road_name, length=road.length)
+
+    def generate_random_network(self, num_intersections, num_roads):
+        # Generate random intersections
+        for i in range(1, num_intersections + 1):
+            self.add_intersection(Intersection(i))
+
+        # Generate random roads connecting intersections
+        while len(self._graph.edges) < num_roads:
+            start_intersection = random.randint(1, num_intersections)
+            end_intersection = random.randint(1, num_intersections)
+            while end_intersection == start_intersection or self._graph.has_edge(start_intersection, end_intersection):
+                end_intersection = random.randint(1, num_intersections)
+            road_id = len(self._roads) + 1
+            road_name = f"Road {road_id}"
+            length = random.randint(100, 1000)
+            self.add_road(Road(road_id, road_name, start_intersection, end_intersection, length))
+
+        # Ensure all nodes are connected by adding additional edges
+        while not nx.is_connected(self._graph):
+            components = list(nx.connected_components(self._graph))
+            start_node = random.choice(list(components[0]))
+            end_node = random.choice(list(components[1]))
+            road_id = len(self._roads) + 1
+            road_name = f"Road {road_id}"
+            length = random.randint(100, 1000)
+            self.add_road(Road(road_id, road_name, start_node, end_node, length))
+
+    @property
+    def intersections(self):
+        return self._intersections
+
+    @property
+    def roads(self):
+        return self._roads
+
+    @property
+    def graph(self):
+        return self._graph
+
+    def visualize_network(self):
+        plt.figure(figsize=(12, 10))
+        pos = nx.spring_layout(self._graph)
+        nx.draw(self._graph, pos, with_labels=True, node_color='lightblue', node_size=800, font_size=8, font_weight='bold', \
+                edge_color='gray', width=2, style='dashed', arrows=True)
+        edge_labels = {(u, v): d['road_name'] for u, v, d in self._graph.edges(data=True)}
+        nx.draw_networkx_edge_labels(self._graph, pos, edge_labels=edge_labels, label_pos=0.3, font_size=8)
+        plt.title("City Road Network")
+        plt.show()
+
+class House:
+    def __init__(self, road):
+        self._road = road
+
+# Usage Example:
+if __name__ == "__main__":
+    manager = TrafficNetworkManager()
+
+    # Generate a random road network with 20 intersections and 20 roads
+    num_intersections = 20
+    num_roads = 20
+    manager.generate_random_network(num_intersections, num_roads)
+
+    # Visualize the road network
+    manager.visualize_network()
+
+    # Test package distribution system
+    for intersection_id in manager.intersections:
+        intersection = manager.intersections[intersection_id]
+        print(f"Intersection {intersection_id} Houses:")
+        for house in intersection.houses:
+            print(f" - House on {house.road.road_name} ({house.road.length} units)")
+
+
+
+
