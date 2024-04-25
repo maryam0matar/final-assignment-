@@ -1,0 +1,62 @@
+
+# Implementation of Priority Queue using Max Heap
+import heapq
+
+
+class PriorityQueue:
+    def __init__(self):
+        # Initialize an empty heap
+        self.heap = []
+
+
+    # Method to insert a post with its view count into the priority queue
+    def insert(self, view_count, post, user):
+        heapq.heappush(self.heap, (-view_count, post, user))
+
+
+    # Method to retrieve the post with the highest view count
+    def get_most_viewed_post(self):
+        if self.heap:
+            # Return post and user with highest view count
+            return self.heap[0][1], self.heap[0][2]
+        else:
+            # Return None if queue is empty
+            return None
+
+
+    # Method to increase the view count of a post
+    def increase_view_count(self, post):
+        for i in range(len(self.heap)):
+            if self.heap[i][1] == post:
+                # Increment view count by modifying heap entry
+                view_count, post, user = self.heap[i]
+                heapq.heapreplace(self.heap, (view_count - 1, post, user))
+                break
+
+
+TEST CASE:
+# Create an instance of PriorityQueue
+priority_queue = PriorityQueue()
+
+
+# Insert multiple posts with their view counts
+priority_queue.insert(100, 'Post 1', 'user1')
+priority_queue.insert(200, 'Post 2', 'user2')
+priority_queue.insert(150, 'Post 3', 'user3')
+
+
+# Retrieve the most viewed post
+most_viewed_post, user = priority_queue.get_most_viewed_post()
+
+
+# Increase the view count of a post
+priority_queue.increase_view_count('Post 2')
+
+
+# Retrieve the most viewed post again
+most_viewed_post_after_increase, user_after_increase = priority_queue.get_most_viewed_post()
+
+
+# Print the results
+print("Most viewed post before increase:", most_viewed_post, "by user", user)  # Output: Most viewed post before increase: Post 2 by user user2
+print("Most viewed post after increase:", most_viewed_post_after_increase, "by user", user_after_increase)  # Output: Most viewed post after increase: Post 2 by user user2
