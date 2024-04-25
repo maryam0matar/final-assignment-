@@ -1,0 +1,44 @@
+# Implementation of Social Media Manager
+class SocialMediaManager:
+    def __init__(self):
+        self.posts = {}# Initialize a dictionary to store posts with datetime as keys
+
+
+    # Method to add a post to the manager
+    def add_post(self, datetime, post, user):
+        self.posts[datetime] = {'post': post, 'user': user}
+
+
+
+
+# Method to find a post by its datetime
+    def find_post_by_datetime(self, datetime):
+        # Retrieve post using datetime key from dictionary
+        return self.posts.get(datetime, None)
+
+
+
+
+
+
+TEST CASE:
+# Create an instance of SocialMediaManager
+manager = SocialMediaManager()
+
+
+# Add multiple posts with different date times
+manager.add_post('2024-04-23 10:00:00', 'Post 1', 'user1')
+manager.add_post('2024-04-23 12:00:00', 'Post 2', 'user2')
+manager.add_post('2024-04-24 09:00:00', 'Post 3', 'user3')
+
+
+# Find a post by its date time
+found_post_1 = manager.find_post_by_datetime('2024-04-23 12:00:00')
+found_post_2 = manager.find_post_by_datetime('2024-04-24 09:00:00')
+not_found_post = manager.find_post_by_datetime('2024-04-25 09:00:00')
+
+
+# Print the results
+print(found_post_1)  # Output: {'post': 'Post 2', 'user': 'user2'}
+print(found_post_2)  # Output: {'post': 'Post 3', 'user': 'user3'}
+print(not_found_post)  # Output: None
