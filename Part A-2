@@ -1,0 +1,96 @@
+# Implementation of Binary Search Tree (BST)
+class Node:
+    def __init__(self, datetime, post, user):
+        # Initialize a node with datetime, post, user, and left/right children
+        self.datetime = datetime
+        self.post = post
+        self.user = user
+        self.left = None
+        self.right = None
+
+
+class BST:
+    def __init__(self):
+        # Initialize an empty BST
+        self.root = None
+
+
+    # Method to insert a node into the BST
+    def insert(self, datetime, post, user):
+        if not self.root:
+            # If BST is empty, insert node as root
+            self.root = Node(datetime, post, user)
+        else:
+            # Otherwise, insert recursively based on datetime value
+            self._insert_recursive(self.root, datetime, post, user)
+
+
+    # Recursive helper method for inserting a node
+    def _insert_recursive(self, node, datetime, post, user):
+        if datetime < node.datetime:
+            if node.left:
+                # If datetime is less than current node's datetime, go left
+                self._insert_recursive(node.left, datetime, post, user)
+            else:
+                # If left child is None, insert node here
+                node.left = Node(datetime, post, user)
+        elif datetime > node.datetime:
+            if node.right:
+                # If datetime is greater than current node's datetime, go right
+                self._insert_recursive(node.right, datetime, post, user)
+            else:
+                # If right child is None, insert node here
+                node.right = Node(datetime, post, user)
+        else:
+            # Handle case where datetime values are not unique
+            pass
+
+
+    # Method to find posts within a specific time range
+    def find_posts_in_range(self, start_datetime, end_datetime):
+        # Initialize result list
+        result = []
+        # Perform range search starting from root
+        self._search_range(self.root, start_datetime, end_datetime, result)
+        # Return list of posts within the specified time range
+        return result
+
+
+    # Recursive helper method for range search
+    def _search_range(self, node, start_datetime, end_datetime, result):
+        if node is None:
+            return
+        # If node's datetime falls within the range, add to result
+        if start_datetime <= node.datetime <= end_datetime:
+            result.append({'datetime': node.datetime, 'post': node.post, 'user': node.user})
+        # Recursively search left subtree if applicable
+        if start_datetime < node.datetime:
+            self._search_range(node.left, start_datetime, end_datetime, result)
+        # Recursively search right subtree if applicable
+        if end_datetime > node.datetime:
+            self._search_range(node.right, start_datetime, end_datetime, result)
+
+
+
+
+TEST CASE:
+# Create an instance of BST
+bst = BST()
+
+
+# Add multiple posts with different datetimes
+bst.insert('2024-04-23 10:00:00', 'Post 1', 'user1')
+bst.insert('2024-04-23 12:00:00', 'Post 2', 'user2')
+bst.insert('2024-04-24 09:00:00', 'Post 3', 'user3')
+bst.insert('2024-04-25 08:00:00', 'Post 4', 'user4')
+
+
+# Find posts within a specific time range
+start_datetime = '2024-04-23 11:00:00'
+end_datetime = '2024-04-24 10:00:00'
+posts_in_range = bst.find_posts_in_range(start_datetime, end_datetime)
+
+
+# Print the results
+for post in posts_in_range:
+    print(post)
